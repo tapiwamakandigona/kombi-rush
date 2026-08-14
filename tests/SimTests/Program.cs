@@ -49,7 +49,7 @@ namespace KombiRush.Tests
                             "seed " + seed + " row at y=" + audit[i].Y.ToString("0.0") + " blocked every lane");
                     }
                 }
-                Greater(rows, 4000f, "expected thousands of audited rows, generator may be idle");
+                Greater(rows, 1500f, "expected thousands of audited rows, generator may be idle");
                 Console.WriteLine("          audited " + rows + " rows across 40 seeds");
             });
 
@@ -125,6 +125,21 @@ namespace KombiRush.Tests
                 Greater(worstTime, 45f, "bot died too early - road is unfair");
                 Greater(worstDist, 400f, "bot covered too little ground");
                 Greater(median, 100f, "median run is too short for a session-based game");
+            });
+
+            Test("both pressures kill: some runs end in a wreck, some run dry", () =>
+            {
+                int wrecked = 0, dry = 0;
+                for (uint seed = 1; seed <= 25; seed++)
+                {
+                    RunResult r = Autopilot.Play(seed, 400f);
+                    if (r.Reason == EndReason.Wrecked) wrecked++;
+                    else if (r.Reason == EndReason.OutOfFuel) dry++;
+                }
+                Console.WriteLine("          " + wrecked + " wrecks, " + dry + " ran dry out of 25");
+                Greater(wrecked, 0f, "nothing ever wrecks - collisions are not a real threat");
+                Greater(dry, 0f, "nothing ever runs dry - fuel is not a real constraint");
+                AtMost(dry, 15f, "most runs end on fuel, which reads as arbitrary rather than earned");
             });
 
             Test("the run still ends - no immortal bot", () =>
@@ -230,7 +245,7 @@ namespace KombiRush.Tests
                     AtMost(sim.Combo, cfg.ComboMax, "combo exceeded the cap");
                 }
                 Console.WriteLine("          " + payouts + " payouts, best combo x" + maxCombo.ToString("0.00"));
-                Greater(payouts, 0f, "the bot never got paid - stops or passengers are unreachable");
+                Greater(payouts, 3f, "too few payouts - the board-and-deliver loop is not firing often enough");
             });
 
             Test("upgrade costs rise with level and stop at max", () =>

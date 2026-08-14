@@ -36,8 +36,8 @@ namespace KombiRush.Sim
         }
 
         // --- derived stats -----------------------------------------------------
-        public float FuelCapacity => 45f + 12f * Level(UpgradeId.FuelTank);
-        public int HullMax => 3 + Level(UpgradeId.Hull);
+        public float FuelCapacity => 60f + 14f * Level(UpgradeId.FuelTank);
+        public int HullMax => 4 + Level(UpgradeId.Hull);
         public int SeatCapacity => 8 + 2 * Level(UpgradeId.Seats);
         public float LaneChangeMultiplier => 1f + 0.09f * Level(UpgradeId.Tyres);
         /// <summary>Tyres soften the pothole speed penalty (never removes it entirely).</summary>

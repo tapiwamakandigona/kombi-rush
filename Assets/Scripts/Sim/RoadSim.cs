@@ -169,17 +169,19 @@ namespace KombiRush.Sim
             guard = 0;
             while (_nextStopY < horizon && guard++ < 8)
             {
+                // a stop is a bay painted across every lane: get there alive and you get paid,
+                // whichever lane you are in
                 float y = Math.Max(_nextStopY, PlayerY + Cfg.MinSpawnDistance);
-                int lane = FirstFreeLaneNear(y, _rng.NextInt(Cfg.LaneCount));
-                if (lane >= 0) Spawn(EntityKind.Stop, lane, 1, y);
+                Spawn(EntityKind.Stop, 0, Cfg.LaneCount, y);
                 _nextStopY += Cfg.StopIntervalMetres;
             }
         }
 
         private void SpawnRow(float y)
         {
-            int maxBlocked = 1 + (int)(DifficultyT * (Cfg.LaneCount - 2));
-            if (maxBlocked > Cfg.LaneCount - 1) maxBlocked = Cfg.LaneCount - 1;
+            int peak = Math.Min(Cfg.MaxBlockedLanesAtPeak, Cfg.LaneCount - 1);
+            int maxBlocked = 1 + (int)(DifficultyT * (peak - 1 + 0.999f));
+            if (maxBlocked > peak) maxBlocked = peak;
             int wanted = _rng.NextInt(1, maxBlocked + 1);
 
             int blockedMask = 0;
@@ -295,19 +297,33 @@ namespace KombiRush.Sim
 
             if (_rng.Chance(Cfg.ChancePassengerRow))
             {
-                int lane = PickFreeLane(freeMask);
-                if (lane >= 0) Spawn(EntityKind.Passenger, lane, 1, y + 1.5f);
+                // passengers flag the kombi from the roadside, so they stand in an outer lane when
+                // one is open - which means going for a fare pulls you towards the kerb
+                int lane = PickOuterFreeLane(freeMask);
+                if (lane >= 0) Spawn(EntityKind.Passenger, lane, 1, y + 3.5f);
             }
             if (_rng.Chance(Cfg.ChanceCoinRow))
             {
                 int lane = PickFreeLane(freeMask);
-                if (lane >= 0) Spawn(EntityKind.Coin, lane, 1, y - 2.0f);
+                if (lane >= 0) Spawn(EntityKind.Coin, lane, 1, y - 5.0f);
             }
             if (_rng.Chance(Cfg.ChanceFuelRow))
             {
                 int lane = PickFreeLane(freeMask);
-                if (lane >= 0) Spawn(EntityKind.FuelCan, lane, 1, y + 3.0f);
+                if (lane >= 0) Spawn(EntityKind.FuelCan, lane, 1, y + 7.0f);
             }
+        }
+
+        /// <summary>Prefers lane 0 or the last lane; falls back to any free lane.</summary>
+        private int PickOuterFreeLane(int freeMask)
+        {
+            int last = Cfg.LaneCount - 1;
+            bool leftFree = (freeMask & 1) != 0;
+            bool rightFree = (freeMask & (1 << last)) != 0;
+            if (leftFree && rightFree) return _rng.Chance(0.5f) ? 0 : last;
+            if (leftFree) return 0;
+            if (rightFree) return last;
+            return PickFreeLane(freeMask);
         }
 
         private int PickFreeLane(int freeMask)
@@ -320,24 +336,6 @@ namespace KombiRush.Sim
             {
                 if ((freeMask & (1 << l)) == 0) continue;
                 if (pick-- == 0) return l;
-            }
-            return -1;
-        }
-
-        private int FirstFreeLaneNear(float y, int preferred)
-        {
-            for (int d = 0; d < Cfg.LaneCount; d++)
-            {
-                int lane = (preferred + d) % Cfg.LaneCount;
-                bool blocked = false;
-                for (int i = 0; i < _entities.Count; i++)
-                {
-                    Entity e = _entities[i];
-                    if (!e.Alive || !e.IsObstacle) continue;
-                    if (Math.Abs(e.Y - y) > 4f) continue;
-                    if (e.BlocksLane(lane)) { blocked = true; break; }
-                }
-                if (!blocked) return lane;
             }
             return -1;
         }
@@ -375,13 +373,11 @@ namespace KombiRush.Sim
                 Entity e = _entities[i];
                 if (!e.Alive || e.Consumed) continue;
 
-                float halfLen = Cfg.KombiHalfLength + (e.IsObstacle ? Cfg.ObstacleHalfLength : Cfg.PickupHalfLength);
+                float halfLen = Cfg.KombiHalfLength + Cfg.ObstacleHalfLength(e.Kind);
                 if (Math.Abs(e.Y - PlayerY) >= halfLen) continue;
 
                 float entityX = (e.Lane + (e.Span - 1) * 0.5f) * Cfg.LaneWidth;
-                float halfWidth = Cfg.KombiHalfWidth
-                                  + (e.IsObstacle ? Cfg.ObstacleHalfWidth : Cfg.PickupHalfWidth)
-                                  + (e.Span - 1) * Cfg.LaneWidth * 0.5f;
+                float halfWidth = Cfg.KombiHalfWidth + Cfg.ObstacleHalfWidth(e.Kind, e.Span);
                 if (Math.Abs(entityX - playerX) >= halfWidth) continue;
 
                 e.Consumed = true;

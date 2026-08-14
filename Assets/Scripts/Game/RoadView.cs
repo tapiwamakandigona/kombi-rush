@@ -179,19 +179,25 @@ namespace KombiRush.Game
                     break;
                 case EntityKind.Passenger:
                     sr.sprite = SpriteFactory.Passenger;
+                    sr.transform.localScale = Vector3.one * 1.35f;
                     sr.sortingOrder = 4;
                     break;
                 case EntityKind.Coin:
                     sr.sprite = SpriteFactory.Coin;
+                    sr.transform.localScale = Vector3.one * 1.5f;
                     sr.sortingOrder = 3;
                     break;
                 case EntityKind.FuelCan:
                     sr.sprite = SpriteFactory.FuelCan;
+                    sr.transform.localScale = Vector3.one * 1.5f;
                     sr.sortingOrder = 3;
                     break;
                 case EntityKind.Stop:
-                    sr.sprite = SpriteFactory.StopSign;
-                    sr.sortingOrder = 2;
+                    // painted bay across every lane, so the payout never depends on being lucky
+                    sr.sprite = SpriteFactory.Solid;
+                    sr.color = Palette.Accent;
+                    sr.sortingOrder = -12;
+                    sr.transform.localScale = new Vector3(RoadWidth - 0.4f, 1.1f, 1f);
                     break;
             }
         }

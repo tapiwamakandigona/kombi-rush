@@ -13,7 +13,7 @@ namespace KombiRush.Game
     {
         private const float SimStep = 1f / 60f;
         private const int MaxStepsPerFrame = 5;
-        private const float KombiScreenHeight = 0.28f;   // where the kombi sits, 0 = bottom
+        private const float KombiScreenHeight = 0.20f;   // where the kombi sits, 0 = bottom
 
         private enum State { Menu, Playing, Over, Garage }
 
@@ -239,8 +239,11 @@ namespace KombiRush.Game
         private void SizeCamera(Camera cam)
         {
             float aspect = Screen.height <= 0 ? 0.5625f : (float)Screen.width / Screen.height;
-            float halfWidthWanted = _config.LaneCount * _config.LaneWidth * 0.5f + 1.15f;
-            cam.orthographicSize = Mathf.Clamp(halfWidthWanted / Mathf.Max(0.35f, aspect), 6.2f, 10.5f);
+            // the verge either side is 3m: enough to read the kerb and scenery, not so much that
+            // the road stops filling the screen. On a 9:16 phone this shows about 27m of road ahead,
+            // which is close to two seconds of reaction time at top speed.
+            float halfWidthWanted = _config.LaneCount * _config.LaneWidth * 0.5f + 3.0f;
+            cam.orthographicSize = Mathf.Clamp(halfWidthWanted / Mathf.Max(0.35f, aspect), 9f, 22f);
             _lastScreenWidth = Screen.width;
             _lastScreenHeight = Screen.height;
         }

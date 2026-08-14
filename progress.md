@@ -65,3 +65,31 @@
 
 **Verified:** 20/20 sim checks green, all three assemblies compile clean.
 **Not verified (needs a licence):** the scene actually loads, the game renders, the APK builds.
+
+## 2026-08-14 — the preview caught a design flaw, so the world got rescaled
+Rendered a real sim frame at phone resolution (`tools/preview/`) and the framing was wrong: at
+24 m/s with a 1.6m lane width the player could only see about 11m of road ahead - under a second
+of reaction time. Nothing in the tests could catch that, because it is a camera problem.
+
+Rescaled the whole world to real dimensions and retuned around a reaction-time budget:
+- lane 3.2m (a real traffic lane), kombi hitbox 1.84 x 4.7m, oncoming car 1.72 x 4.3m,
+  pothole 1.7 x 1.2m, roadblock spans two lanes
+- speeds 8.5 -> 17 m/s (31 -> 61 km/h), lane change 2.6 lanes/s
+- camera keeps a 3m verge either side, kombi sits 20% up the screen: about **27m of road visible
+  ahead, close to two seconds at top speed**
+- rows every 2.1s falling to 1.35s, nothing spawns closer than 30m, at most 2 of 4 lanes blocked
+- per-kind hitboxes replaced the single obstacle box
+
+Balance work off the back of it:
+- **Fuel deaths were arbitrary.** Every "worst seed" ended at exactly 45.0s - the tank size, not a
+  mistake. Capacity is now 60s base (+14s per upgrade), cans are commoner and worth more, and a new
+  test asserts both failure modes occur but fuel is not the usual one (now 22 wrecks / 3 dry of 25).
+- **The fare loop barely fired.** Stops sat in a single lane every 300m, so the bot got paid once a
+  run. A stop is now a bay painted across every lane every 180m: reach it alive and you get paid.
+  Payouts went from 1 to 13 per run and the combo reaches its x3 cap.
+- **Passengers now wait in an outer lane** when one is open, so going for a fare pulls you toward
+  the kerb - authentic, and it creates a real decision instead of a free pickup.
+- Base hull 4 instead of 3, since an oncoming car costs 2.
+
+Result: 21/21 checks green, bot median run 181s, worst of 25 seeds 85s / 927m, stock kombi
+averages 2,461m against 5,515m fully upgraded.

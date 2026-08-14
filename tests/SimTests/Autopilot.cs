@@ -11,7 +11,8 @@ namespace KombiRush.Tests
     /// </summary>
     public static class Autopilot
     {
-        private const float Horizon = 40f;
+        // the bot only reacts to what a player can actually see on a portrait screen
+        private const float Horizon = 28f;
 
         public static void Decide(RoadSim sim)
         {
@@ -22,7 +23,7 @@ namespace KombiRush.Tests
 
             // an obstacle level with the kombi is still lethal, so only ignore it once it is
             // fully past the collision window
-            float behindCutoff = -(sim.Cfg.KombiHalfLength + sim.Cfg.ObstacleHalfLength + 0.6f);
+            float behindCutoff = -(sim.Cfg.KombiHalfLength + sim.Cfg.TrafficHalfLength + 0.6f);
 
             var entities = sim.Entities;
             for (int i = 0; i < entities.Count; i++)
@@ -53,7 +54,7 @@ namespace KombiRush.Tests
                 float lanesToCross = Math.Abs(l - sim.LaneF);
                 float crossSeconds = lanesToCross / laneSpeed;
                 // road covered while sliding across, plus a safety margin
-                float needed = sim.Speed * crossSeconds + sim.Cfg.KombiHalfLength + sim.Cfg.ObstacleHalfLength + 1.5f;
+                float needed = sim.Speed * crossSeconds + sim.Cfg.KombiHalfLength + sim.Cfg.TrafficHalfLength + 1.5f;
 
                 // every lane the kombi passes through must be clear for the whole crossing
                 bool pathSafe = true;

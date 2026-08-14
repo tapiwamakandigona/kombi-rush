@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>KombiRush.Tests</RootNamespace>
+    <AssemblyName>SimTests</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <!-- The simulation is engine-free by design, so the same sources compile here. -->
+  <ItemGroup>
+    <Compile Include="../../Assets/Scripts/Sim/**/*.cs" />
+    <Compile Include="*.cs" />
+  </ItemGroup>
+
+</Project>

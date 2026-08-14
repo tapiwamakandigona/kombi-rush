@@ -61,6 +61,14 @@ Environment variables the build reads: `KOMBI_OUTPUT`, `KOMBI_VERSION`, `KOMBI_V
 CI: `sim tests` runs on every push (no licence required); `android apk` builds the APK on demand
 and needs a Unity licence in repository secrets — see `.github/workflows/android.yml`.
 
+## Preview
+
+`docs/preview/` holds layout mock-ups rendered from real simulation frames — see
+`tools/preview/README.md`. They are **not** screenshots: no licensed Unity build exists yet, so
+positions, distances and HUD values are real while the drawing approximates the in-game art.
+
+![Kombi Rush layout preview](docs/preview/frame_22s.png)
+
 ## Controls
 
 Tap the left or right half of the screen to shift one lane, or hold and slide to steer straight

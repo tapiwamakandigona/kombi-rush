@@ -1,0 +1,90 @@
+name: android apk
+
+# Builds a real APK with GameCI. Needs a Unity licence in repository secrets:
+#   UNITY_EMAIL + UNITY_PASSWORD - a Unity ID with a free Personal licence, or
+#   UNITY_LICENSE                - the contents of a .ulf activation file
+# Optional release signing:
+#   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASS, ANDROID_KEY_ALIAS, ANDROID_KEY_PASS
+on:
+  workflow_dispatch:
+    inputs:
+      versionCode:
+        description: 'Android versionCode'
+        required: false
+        default: '1'
+      development:
+        description: 'Development build (script debugging)'
+        type: boolean
+        required: false
+        default: false
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+      KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      KEY_PASS: ${{ secrets.ANDROID_KEY_PASS }}
+    steps:
+      - name: Check the licence is configured
+        run: |
+          if [ -z "$UNITY_LICENSE" ] && [ -z "$UNITY_EMAIL" ]; then
+            echo "::error::No Unity licence. Add UNITY_EMAIL + UNITY_PASSWORD (free Personal licence) or UNITY_LICENSE to repository secrets."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - name: Cache the Unity Library folder
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-Android-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-Android-
+
+      - name: Stage the release keystore
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            printf '%s' "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+            echo "KOMBI_KEYSTORE=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
+            echo "KOMBI_KEYSTORE_PASS=$KEYSTORE_PASS" >> "$GITHUB_ENV"
+            echo "KOMBI_KEY_ALIAS=$KEY_ALIAS" >> "$GITHUB_ENV"
+            echo "KOMBI_KEY_PASS=$KEY_PASS" >> "$GITHUB_ENV"
+            echo "staged a release keystore"
+          else
+            echo "no keystore secret, the APK will be signed with Unity's debug key"
+          fi
+
+      - name: Build APK
+        uses: game-ci/unity-builder@v4
+        env:
+          KOMBI_OUTPUT: build/Android/kombi-rush.apk
+          KOMBI_VERSION_CODE: ${{ github.event.inputs.versionCode || '1' }}
+          KOMBI_DEVELOPMENT: ${{ github.event.inputs.development == 'true' && '1' || '0' }}
+        with:
+          unityVersion: 6000.3.22f1
+          targetPlatform: Android
+          androidExportType: androidPackage
+          buildMethod: KombiRush.EditorTools.BuildAndroid.Build
+          allowDirtyBuild: true
+
+      - name: Report APK size
+        run: |
+          ls -la build/Android/
+          size=$(stat -c%s build/Android/kombi-rush.apk)
+          echo "APK size: $((size / 1024 / 1024)) MB ($size bytes)"
+          echo "### APK built: $((size / 1024 / 1024)) MB" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kombi-rush-apk
+          path: build/Android/kombi-rush.apk
+          if-no-files-found: error

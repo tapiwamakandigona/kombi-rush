@@ -1,0 +1,17 @@
+{
+    "name": "KombiRush.Game",
+    "rootNamespace": "KombiRush.Game",
+    "references": [
+        "KombiRush.Sim",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

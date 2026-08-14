@@ -2,19 +2,89 @@
   "project": "Kombi Rush",
   "definition_of_done": "A signed Android APK, installed and playable offline on a 2GB entry-level phone, with a complete run loop, garage upgrades and persistent save.",
   "features": [
-    { "id": "sim-core", "desc": "Deterministic run simulation: road generation, motion, collisions", "passes": true, "evidence": "tools/run_sim_tests.sh - 20/20 checks, 6592 generated rows audited across 40 seeds" },
-    { "id": "sim-fairness", "desc": "Every row survivable: open lane exists and is reachable, no cheap spawns", "passes": true, "evidence": "fairness checks green with ReachSafetyFactor 0.6" },
-    { "id": "sim-economy", "desc": "Fares, combo payouts, upgrade cost curve, wallet", "passes": true, "evidence": "economy + payout checks green" },
-    { "id": "sim-save", "desc": "Profile serialisation, forward compatible, daily bonus", "passes": true, "evidence": "profile round-trip and corrupt-input checks green" },
-    { "id": "unity-render", "desc": "Unity scene renders the sim: road, kombi, entities, camera", "passes": false, "evidence": "" },
-    { "id": "unity-input", "desc": "One-thumb steering: drag and tap-half, plus keyboard in editor", "passes": false, "evidence": "" },
-    { "id": "unity-hud", "desc": "HUD: distance, fuel, hull, riders, cash, combo", "passes": false, "evidence": "" },
-    { "id": "unity-menus", "desc": "Menu, garage upgrades, game over with run summary", "passes": false, "evidence": "" },
-    { "id": "unity-save", "desc": "Save/load to persistentDataPath, survives app restart", "passes": false, "evidence": "" },
-    { "id": "art", "desc": "Sprite set: kombi, road, potholes, traffic, roadblock, passenger, coin, fuel", "passes": false, "evidence": "" },
-    { "id": "audio", "desc": "Engine loop plus SFX for hit, pickup, payout", "passes": false, "evidence": "" },
-    { "id": "build-apk", "desc": "Editor build script produces an installable APK", "passes": false, "evidence": "BLOCKED: editor licence missing" },
-    { "id": "ci", "desc": "GitHub Actions runs sim tests on every push and builds the APK on demand", "passes": false, "evidence": "" },
-    { "id": "device-perf", "desc": "60fps and under 60MB APK on an entry-level device", "passes": false, "evidence": "" }
+    {
+      "id": "sim-core",
+      "desc": "Deterministic run simulation: road generation, motion, collisions",
+      "passes": true,
+      "evidence": "tools/run_sim_tests.sh - 20/20 checks, 6592 generated rows audited across 40 seeds"
+    },
+    {
+      "id": "sim-fairness",
+      "desc": "Every row survivable: open lane exists and is reachable, no cheap spawns",
+      "passes": true,
+      "evidence": "fairness checks green with ReachSafetyFactor 0.6"
+    },
+    {
+      "id": "sim-economy",
+      "desc": "Fares, combo payouts, upgrade cost curve, wallet",
+      "passes": true,
+      "evidence": "economy + payout checks green"
+    },
+    {
+      "id": "sim-save",
+      "desc": "Profile serialisation, forward compatible, daily bonus",
+      "passes": true,
+      "evidence": "profile round-trip and corrupt-input checks green"
+    },
+    {
+      "id": "unity-render",
+      "desc": "Unity scene renders the sim: road, kombi, entities, camera",
+      "passes": false,
+      "evidence": "code complete, compiles clean against Unity assemblies (tools/compile_check.sh); runtime unverified until the editor is licensed"
+    },
+    {
+      "id": "unity-input",
+      "desc": "One-thumb steering: drag and tap-half, plus keyboard in editor",
+      "passes": false,
+      "evidence": "code complete, compiles clean against Unity assemblies (tools/compile_check.sh); runtime unverified until the editor is licensed"
+    },
+    {
+      "id": "unity-hud",
+      "desc": "HUD: distance, fuel, hull, riders, cash, combo",
+      "passes": false,
+      "evidence": "code complete, compiles clean against Unity assemblies (tools/compile_check.sh); runtime unverified until the editor is licensed"
+    },
+    {
+      "id": "unity-menus",
+      "desc": "Menu, garage upgrades, game over with run summary",
+      "passes": false,
+      "evidence": "code complete, compiles clean against Unity assemblies (tools/compile_check.sh); runtime unverified until the editor is licensed"
+    },
+    {
+      "id": "unity-save",
+      "desc": "Save/load to persistentDataPath, survives app restart",
+      "passes": false,
+      "evidence": "code complete, compiles clean against Unity assemblies (tools/compile_check.sh); runtime unverified until the editor is licensed"
+    },
+    {
+      "id": "art",
+      "desc": "Sprite set: kombi, road, potholes, traffic, roadblock, passenger, coin, fuel",
+      "passes": false,
+      "evidence": "code complete, compiles clean against Unity assemblies (tools/compile_check.sh); runtime unverified until the editor is licensed"
+    },
+    {
+      "id": "audio",
+      "desc": "Engine loop plus SFX for hit, pickup, payout",
+      "passes": false,
+      "evidence": "code complete, compiles clean against Unity assemblies (tools/compile_check.sh); runtime unverified until the editor is licensed"
+    },
+    {
+      "id": "build-apk",
+      "desc": "Editor build script produces an installable APK",
+      "passes": false,
+      "evidence": "BLOCKED: editor licence missing"
+    },
+    {
+      "id": "ci",
+      "desc": "GitHub Actions runs sim tests on every push and builds the APK on demand",
+      "passes": false,
+      "evidence": "code complete, compiles clean against Unity assemblies (tools/compile_check.sh); runtime unverified until the editor is licensed"
+    },
+    {
+      "id": "device-perf",
+      "desc": "60fps and under 60MB APK on an entry-level device",
+      "passes": false,
+      "evidence": ""
+    }
   ]
 }

@@ -1,0 +1,23 @@
+name: sim tests
+
+# The game rules live in an engine-free assembly, so they can be tested on every push with no
+# Unity install and no licence. This is the gate that must stay green.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Run simulation tests
+        run: dotnet run --project tests/SimTests/SimTests.csproj -c Release

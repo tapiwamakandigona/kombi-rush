@@ -40,3 +40,28 @@
      guaranteed gap is always reachable with margin.
 - Result: bot median run 181s, worst of 25 seeds 53s/622m, stock kombi averages 2,606m against
   7,557m fully upgraded. 20/20 checks green.
+
+## 2026-08-14 — Unity layer
+- Wrote the whole presentation layer: `RoadView` (tarmac, red-and-white kerbs, scrolling lane
+  markings, roadside scenery, pooled entity sprites), `GameRoot` (fixed 1/60 step accumulator so
+  the game plays the same at 30 and 60fps, camera follow with hit shake, engine pitch driven by
+  speed), `InputSteering` (tap a side or hold-and-slide, arrow keys in the editor), `Hud`
+  (fares, distance, fuel, hull pips, riders, combo, floating toasts), `Screens` (menu, garage with
+  five upgrade rows, end-of-shift summary), `SaveIO` (atomic write to persistentDataPath).
+- **All art and audio are generated at runtime** — `SpriteFactory` bakes sprites on a small
+  software canvas with distance-based anti-aliasing, `AudioKit` synthesises the engine loop and
+  every SFX. The APK ships no texture or audio payload.
+- `Assets/Scripts/Editor/BuildAndroid.cs` is the single build entry point, configured entirely
+  from `KOMBI_*` environment variables; `SceneBuilder.cs` regenerates the Boot scene from code so
+  it can never drift from the components it hosts.
+- `tools/compile_check.sh` compiles all three assemblies against Unity's own reference DLLs with
+  warnings-as-errors, using the editor's bundled Roslyn. This is the only static verification
+  available while the editor is unlicensed, and it already caught one real problem:
+  `AndroidApiLevel24` is obsolete in Unity 6000.3 (minimum is 25 / Android 7.1), so minSdk moved
+  to 25 in both the build script and ProjectSettings. Per StatCounter that costs about 2.5% of
+  Zimbabwean devices, and the engine leaves no choice.
+- CI: `sim tests` runs the rules on every push with no licence; `android apk` builds through
+  GameCI on demand and fails fast with a clear message when no licence secret is present.
+
+**Verified:** 20/20 sim checks green, all three assemblies compile clean.
+**Not verified (needs a licence):** the scene actually loads, the game renders, the APK builds.

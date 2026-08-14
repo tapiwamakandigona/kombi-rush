@@ -1,0 +1,20 @@
+{
+    "name": "KombiRush.Editor",
+    "rootNamespace": "KombiRush.EditorTools",
+    "references": [
+        "KombiRush.Sim",
+        "KombiRush.Game",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

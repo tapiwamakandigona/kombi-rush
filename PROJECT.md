@@ -25,12 +25,12 @@ Decided from live data, not taste:
   (StatCounter, 2026-07) Samsung 42.0%, Apple 12.8%, Huawei 12.7%, Itel 7.4%, Xiaomi 5.4%,
   Tecno 4.6%, Infinix 0.8%. Start.io names the Itel A56 Pro as the top device for ZW mobile
   gamers. Android version spread: 13 (18.6%), 16 (15.6%), 14 (14.7%), 15 (13.0%), 12 (11.2%),
-  ≤9 about 8% → `minSdk 24`. [gs.statcounter.com, 2026-07]
+  ≤9 about 8% → `minSdk 25`. [gs.statcounter.com, 2026-07]
 
 ## Standing decisions
 - **Engine:** Unity **6000.3.22f1**, Universal RP 2D (from Unity's own 2D cross-platform template,
   so ProjectSettings are authoritative rather than hand-rolled).
-- **Target:** Android, `minSdk 24`, IL2CPP, ARM64 + ARMv7, portrait only,
+- **Target:** Android, `minSdk 25`, IL2CPP, ARM64 + ARMv7, portrait only,
   `com.tsorostudios.kombirush`, company "Tsoro Studios".
 - **Budget:** APK under 60MB (target under 40MB), 60fps on a 2GB-RAM Helio A22 class device,
   fully playable with no network permission.
